@@ -12,6 +12,8 @@ import jinja2
 import math
 import re
 from pandas import DataFrame
+import matplotlib.pyplot as plt
+
 
 # program to read in CSV file from PicoScope and create a graph
 # excel was dragged to a halt because the data set is so large
@@ -73,17 +75,18 @@ def main():
     readings_len = len(readings.index)
     print ("number of readings = {:d}".format( readings_len ) )
 
-    #plot the readings
     
     #plot #01  all the hole diameters
     df_readings = readings
     df_readings_len = len(df_readings.index)
     print ("number of df readings = {:d}".format( df_readings_len ) )
 
-
-    ax01=df_readings.plot(kind='line',  figsize=(11,8))
+    #start plt #01
+    fig_01 = plt.figure(figsize=(11,8), dpi=100.0)
+    #fig_01 = plt.figure(figsize=(11,8))
+    ax01=df_readings.plot(title='Mini Bone Air Pressure', kind='line',figsize=(11,8),color=['blue','red'])
     ax01.set_ylim(-0.5, 3.0)
-    ax01.set(xlabel='Time (in secs) ', ylabel='Air Pressure (in Volts)')
+    ax01.set(xlabel='Time (in secs) ', ylabel='Measured Air Pressure (in Volts)')
     xticks_num = np.arange(-1.1, 4.1, step=0.1)
     #xticks_label = map(str, xticks_num)
     xticks_label = ['{:1.3f}'.format(x) for x in xticks_num]
@@ -92,36 +95,26 @@ def main():
     ax01.set_xticks(xticks_num)
     ax01.set_xticklabels(xticks_label, rotation=90)
 
-    #set up secondary dummy data frame
+    #put notes on the plot
+    ax01.text(-1.000, 2.9, 'Test conducted 01/23/2019 on-site by Rich Budek using portable PLC with valves', fontsize=12)
+    ax01.text(-1.000, 2.8, 'to control the moldset. PLC was adjusted to provide overlap between close and', fontsize=12)
+    ax01.text(-1.000, 2.7, 'eject operation. Holes were drilled oversize by the customer.', fontsize=12)
+    ax01.text(-1.000, 2.6, 'Results: Steady state eject never hits supply air pressure.', fontsize=12)
+
+    #set up secondary axis
+    ax02 = ax01.twinx()  #instantiate a second axis with same x-axis data
+    ax02.set_ylim(-23.8, 143)
+    ax02.set(ylabel='Non-Calibrated Calculated Air Pressure (in PSI)')
+
     df_sec_axis = pd.DataFrame(range(0,readings_len))
 
-    df_sec_axis = pd.DataFrame({'two': range(100, 110)})
-    ax02 = df_sec_axis.plot( title='Mini Bone Air Pressure', legend='False', figsize=(11,8), secondary_y=True, ax=ax01)
-    ax02.set_ylim(-23.8, 143)
-    ax02.set(ylabel='Approx. Air Pressure (in PSI)')
+    df_sec_axis = pd.DataFrame({'shop air': range(120, 120)})
+    ax02 = df_sec_axis.plot( legend='False', figsize=(11,8), secondary_y=True ) 
+    
 
-    ax02.set_xticks(xticks_num)
-    ax02.set_xticklabels(xticks_label, rotation=90)
-    fig01=ax02.get_figure()
-    fig01.savefig('plot_01.svg')
+    fig_03 = ax01.get_figure()
+    fig_03.savefig('plot_01.svg')
 
-
-
-    ax02=df_sec_axis.plot(kind='line', title='Mini Bone Air Pressure', legend='False', figsize=(11,8), secondary_y=True)
-    #ax02 = df_sec_axis.plot(secondary_y=True)
-    ax02.set_ylim(0, 143)
-
-    #fig = ax.get_figure()
-    #fig.savefig('test.png')
-
-    df = pd.DataFrame({'one': range(10), 'two': range(100, 110)})
-    #ax2 = df['two'].plot(secondary_y=True)
-    #ax2.set_ylim(-20, 50)
-    ax2 = df_readings.plot(secondary_y=True)
-    ax2.set_ylim(-20, 50)
-
-    fig01=ax01.get_figure()
-    fig01.savefig('plot_02.svg')
 
 
 
