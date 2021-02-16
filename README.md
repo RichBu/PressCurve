@@ -1,5 +1,5 @@
 # PressCurve
-Reads in csv file from Pico Scope and plots a pressure curve
+Python app Reads in csv file from Pico Scope and plots a pressure curve
 
 Program by Rich Budek  02/16/2021
 
